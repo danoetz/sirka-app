@@ -43,7 +43,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: CachedNetworkImage(
                   imageUrl: product.image!,
                   fit: BoxFit.cover,
-                  cacheKey: "hero-${product.id}",
+                  cacheKey: hero,
                 ),
               ),
             ),

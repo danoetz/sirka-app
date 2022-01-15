@@ -3,6 +3,7 @@ import 'package:sirka_app/features/product/data/models/product.dart';
 
 abstract class ProductRepository {
   Future<List<Product>?> fetchProducts();
+  Future<List<Product>?> fetchProductsPagination({int page, int limit});
   Future<List<Product>?> getProducts();
   Future<Pagination<Product>> getProductsPagination({int currentPage, int perPage});
   Future<List<Product>?> getWishlist();

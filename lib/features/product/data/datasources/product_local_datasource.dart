@@ -5,6 +5,7 @@ import 'package:sirka_app/shared/helpers/print_helper.dart';
 
 abstract class ProductLocalDataSource {
   Future<List<Product>> getProducts();
+  Future<List<Product>> getProductsPagination({int page, int limit});
   Future<void> cacheProducts(List<Product>? products);
   Future<void> updateProduct(Product? product);
   Future<List<Product>> getWishlist();
@@ -18,6 +19,26 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     try {
       Box<Product> box = await Hive.openBox<Product>(Db.PRODUCTS);
       return box.values.toList();
+    } catch (e) {
+      logE("getProducts: ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Product>> getProductsPagination({int page = 0, int limit = 5}) async {
+    try {
+      logW("""
+        PAGE: $page
+        LIMIT: $limit
+        RANGE: ${page * limit} - ${(page * limit) + limit}""");
+      Box<Product> box = await Hive.openBox<Product>(Db.PRODUCTS);
+      int total = box.values.length;
+      if (((page * limit) + limit) > total) {
+        return box.values.toList().sublist(page * limit);
+      } else {
+        return box.values.toList().sublist(page * limit, (page * limit) + limit);
+      }
     } catch (e) {
       logE("getProducts: ${e.toString()}");
       rethrow;

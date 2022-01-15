@@ -20,8 +20,8 @@ class ProductCubit extends Cubit<ProductState> {
   RxBool isLoading = false.obs;
 
   Future<void> initProductsData() async {
-    emit(ProductLoading());
     try {
+      emit(ProductLoading());
       List<Product>? data = await locator<ProductRepositoryImpl>().fetchProducts();
       if (data!.isNotEmpty) {
         logD(data.length);
@@ -33,9 +33,9 @@ class ProductCubit extends Cubit<ProductState> {
   }
 
   Future<Pagination<Product>?> getProducts({required int page, int perPage = defaultPerPage}) async {
-    isLoading.value = true;
-    emit(ProductLoading());
     try {
+      isLoading.value = true;
+      emit(ProductLoading());
       final pagination = await locator<ProductRepositoryImpl>().getProductsPagination(currentPage: page, perPage: perPage);
 
       if (pagination.data.isNotEmpty) {
@@ -55,26 +55,30 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  Future<void> refreshProducts() async {
+  Future<void> getProductsPagination({required int page, int perPage = defaultPerPage}) async {
     try {
-      emit(ReloadingData());
-      productsList.clear();
-      isLastPage.value = false;
-      pageController.value = 0;
+      emit(ProductLoading());
       isLoading.value = true;
+      final data = await locator<ProductRepositoryImpl>().fetchProductsPagination(page: page, limit: perPage);
 
-      final pagination = await locator<ProductRepositoryImpl>().getProductsPagination(currentPage: 0, perPage: defaultPerPage);
-
-      if (pagination.data.isNotEmpty) {
-        List<Product> res = pagination.data;
-        emit(ProductLoaded(products: res));
-      } else {
-        emit(ProductError(message: "All products has been loaded!"));
+      pageController.value = page;
+      if (data!.length < defaultPerPage) {
+        isLastPage.value = true;
       }
+      emit(ProductLoaded(products: data));
       isLoading.value = false;
     } catch (e) {
+      isLoading.value = false;
       emit(ProductError(message: e.toString()));
     }
+  }
+
+  Future<void> refreshProducts() async {
+    productsList.clear();
+    isLastPage.value = false;
+    pageController.value = 0;
+
+    getProductsPagination(page: 0, perPage: defaultPerPage);
   }
 
   Future<void> updateProductWishlist({required Product product}) async {

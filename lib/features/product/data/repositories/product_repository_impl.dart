@@ -24,6 +24,22 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
+  Future<List<Product>?> fetchProductsPagination({int page = 0, int limit = 5}) async {
+    bool isOnline = await locator.get<NetworkInfoImpl>().isConnected;
+    if (isOnline) {
+      // fetch from remote
+      var res = await ProductRemoteDataSourceImpl().getProductsPagination(page: page, limit: limit);
+      // cache & return data
+      await ProductLocalDataSourceImpl().cacheProducts(res);
+      var result = await ProductLocalDataSourceImpl().getProductsPagination(page: page, limit: limit);
+      return result;
+    } else {
+      // fetch from local
+      return await ProductLocalDataSourceImpl().getProductsPagination(page: page, limit: limit);
+    }
+  }
+
+  @override
   Future<List<Product>?> getProducts() async {
     return await ProductLocalDataSourceImpl().getProducts();
   }

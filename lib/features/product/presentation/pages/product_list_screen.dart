@@ -36,7 +36,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
   initData() async {
     bloc!.productsList.clear();
     await bloc!.initProductsData();
-    await bloc!.getProducts(page: 0);
+    // await bloc!.getProducts(page: 0);
+    await bloc!.getProductsPagination(page: 0);
   }
 
   @override
@@ -54,7 +55,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             padding: const EdgeInsets.only(right: 10),
             child: GestureDetector(
               child: const Icon(Icons.favorite_outlined),
-              onTap: () {},
+              onTap: () => Get.toNamed(AppPagesName.PRODUCT_WISHLIST),
             ),
           ),
           Padding(
@@ -125,7 +126,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
               // });
               int nextPage = bloc!.pageController.value + 1;
               if (!(bloc!.isLastPage.value)) {
-                bloc!.getProducts(page: nextPage);
+                // bloc!.getProducts(page: nextPage);
+                bloc!.getProductsPagination(page: nextPage);
               }
             },
             isLoading: bloc!.isLoading.value,
