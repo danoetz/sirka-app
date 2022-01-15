@@ -10,6 +10,8 @@ class ProductInitial extends ProductState {
   ProductInitial();
 }
 
+class ProductInitialized extends ProductState {}
+
 // PRODUCTS
 class ProductLoading extends ProductState {
   final String? message;

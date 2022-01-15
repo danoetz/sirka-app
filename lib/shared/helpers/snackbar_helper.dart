@@ -8,7 +8,7 @@ class SnackBarHelper {
       title ?? "INFO",
       description ?? "",
       snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.fromLTRB(10, 0, 10, 10),
     );
   }
 }

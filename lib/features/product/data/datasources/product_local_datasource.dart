@@ -30,6 +30,11 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
       Box<Product> box = await Hive.openBox<Product>(Db.PRODUCTS);
       // box.clear();
       for (var i in products!) {
+        Product b = box.values.singleWhere((x) => x.id == i.id);
+        // keep wishlist
+        if (b.isWishlist!) {
+          i.isWishlist = true;
+        }
         box.put(i.id!, i);
       }
     } catch (e) {

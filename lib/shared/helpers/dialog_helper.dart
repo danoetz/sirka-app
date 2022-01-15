@@ -30,26 +30,26 @@ class DialogHelper {
   }
 
   //show loading
-  static void showLoading({String? message}) {
+  static void showLoading({String message = 'Loading...'}) {
     Get.dialog(
       Dialog(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: Container(
           padding: const EdgeInsets.all(16.0),
           width: 70,
-          color: Colors.amber,
+          color: Colors.white,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 8),
-              Text(message ?? 'Loading...'),
+              Text(message),
             ],
           ),
         ),
         insetPadding: EdgeInsets.zero,
       ),
-      barrierDismissible: false,
+      barrierDismissible: true,
     );
   }
 

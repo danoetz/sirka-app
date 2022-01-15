@@ -79,15 +79,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
           DialogHelper.showErrorDialog(title: "INFORMATION", description: state.message);
         } else if (state is ProductLoading) {
           printDebug("LOADING");
-          DialogHelper.showLoading(message: state.message);
-          bloc!.isLoading.value = true;
+          DialogHelper.showLoading(message: state.message!);
+        } else if (state is ProductInitialized) {
+          printDebug("INITIALIZED");
+          DialogHelper.hideLoading();
         } else if (state is ProductLoaded) {
           printDebug("LOADED");
           DialogHelper.hideLoading();
           bloc!.productsList.addAll(state.products!);
         } else if (state is ReloadingData) {
-          DialogHelper.showLoading(message: state.message);
           printDebug("RELOAD");
+          DialogHelper.showLoading(message: state.message!);
         } else if (state is WishlistAdded) {
           printDebug("ADDED");
           SnackBarHelper.showSnackBar(
