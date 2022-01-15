@@ -5,6 +5,7 @@ import 'package:sirka_app/core/constants/config.dart';
 import 'package:sirka_app/core/models/build_config.dart';
 import 'package:sirka_app/core/modules/core_module.dart';
 import 'package:sirka_app/core/routers/app_pages.dart';
+import 'package:sirka_app/features/product/presentation/bloc/product_cubit.dart';
 import 'package:sirka_app/features/splash_screen/presentation/pages/splash_screen.dart';
 import 'package:sirka_app/shared/helpers/print_helper.dart';
 
@@ -27,11 +28,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'SIRKA',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const SplashScreen(),
-      getPages: AppPages.pages,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProductCubit>(create: (context) => ProductCubit()),
+      ],
+      child: GetMaterialApp(
+        title: 'SIRKA',
+        theme: ThemeData(primarySwatch: Colors.blue),
+        home: const SplashScreen(),
+        getPages: AppPages.pages,
+      ),
     );
   }
 }
