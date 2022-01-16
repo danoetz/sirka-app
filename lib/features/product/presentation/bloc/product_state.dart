@@ -20,13 +20,6 @@ class ProductLoading extends ProductState {
   List<Object?> get props => [message];
 }
 
-class ReloadingData extends ProductState {
-  final String? message;
-  ReloadingData({this.message = "Reloading data..."});
-  @override
-  List<Object?> get props => [message];
-}
-
 class ProductLoaded extends ProductState {
   final List<Product>? products;
   ProductLoaded({this.products});
@@ -41,14 +34,6 @@ class ProductError extends ProductState {
   List<Object?> get props => [message];
 }
 
-// WISHLIST
-// class WishlistLoading extends ProductState {
-//   final String? message;
-//   WishlistLoading({this.message = "Loading..."});
-//   @override
-//   List<Object?> get props => [message];
-// }
-//
 class WishlistAdded extends ProductState {
   final Product? product;
   WishlistAdded({this.product});
@@ -61,13 +46,6 @@ class WishlistRemoved extends ProductState {
   WishlistRemoved({this.product});
   @override
   List<Object?> get props => [product];
-}
-
-class WishlistAlreadyAdded extends ProductState {
-  final String? message;
-  WishlistAlreadyAdded({this.message = "This product is on wishlist!"});
-  @override
-  List<Object?> get props => [message];
 }
 
 class WishlistError extends ProductState {

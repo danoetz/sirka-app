@@ -8,6 +8,7 @@ import 'package:sirka_app/features/product/data/models/product.dart';
 import 'package:sirka_app/features/product/presentation/bloc/wishlist_cubit.dart';
 import 'package:sirka_app/shared/helpers/dialog_helper.dart';
 import 'package:sirka_app/shared/helpers/print_helper.dart';
+import 'package:sirka_app/shared/helpers/snackbar_helper.dart';
 import 'package:sirka_app/shared/styles/text_styles.dart';
 
 class ProductWishlistScreen extends StatefulWidget {
@@ -42,6 +43,41 @@ class _ProductWishlistScreenState extends State<ProductWishlistScreen> {
           child: const Text("Wishlist"),
         ),
         centerTitle: true,
+        actions: [
+          Obx(() {
+            return Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: bloc!.productsWishlist.isNotEmpty
+                  ? GestureDetector(
+                      child: const Icon(Icons.delete_forever),
+                      onTap: () async {
+                        await showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text('Are you sure?'),
+                            content: const Text('Remove all products from wishlist?'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () => Get.back(),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  await bloc!.clearWishlist();
+                                  Get.back();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  : const SizedBox(),
+            );
+          }),
+        ],
       ),
       body: buildBlocListener(),
     );
@@ -52,27 +88,40 @@ class _ProductWishlistScreenState extends State<ProductWishlistScreen> {
       listener: (context, state) {
         if (state is WishlistError) {
           print("ERROR");
-          DialogHelper.hideLoading();
           DialogHelper.showErrorDialog(title: "INFORMATION", description: state.message);
         } else if (state is WishlistLoading) {
           print("LOADING");
-          DialogHelper.showLoading(message: state.message!);
         } else if (state is WishlistLoaded) {
           print("LOADED ${state.products!.length} wishlists");
           bloc!.productsWishlist.addAll(state.products!);
-          DialogHelper.hideLoading();
         } else if (state is RemoveFromWishlist) {
           print("REMOVE");
+          SnackBarHelper.dismissSnackBar();
+          SnackBarHelper.showSnackBar(title: "Wishlist", description: state.message);
         } else if (state is ClearWishlist) {
           print("CLEAR");
         }
       },
-      child: buildContent(),
+      child: Obx(() {
+        return buildContent();
+      }),
     );
   }
 
   Widget buildContent() {
-    return Obx(() {
+    if (bloc!.productsWishlist.isEmpty && bloc!.isLoading.value) {
+      return const Center(
+        child: SizedBox(
+          height: 32,
+          width: 32,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    } else if (bloc!.productsWishlist.isEmpty) {
+      return const Center(
+        child: Text("Add a product to wishlist"),
+      );
+    } else {
       return LazyLoadScrollView(
         onEndOfPage: () {
           printDebug("FETCH NEXT PAGE | IS LAST PAGE: ${bloc!.isLastPage.value}");
@@ -115,11 +164,11 @@ class _ProductWishlistScreenState extends State<ProductWishlistScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Hero(
-                                tag: "wishlist-${product.id}",
+                                tag: "hero-${product.id}",
                                 child: CachedNetworkImage(
                                   imageUrl: product.image!,
                                   fit: BoxFit.cover,
-                                  cacheKey: "wishlist-${product.id}",
+                                  cacheKey: "hero-${product.id}",
                                 ),
                               ),
                             ),
@@ -148,20 +197,47 @@ class _ProductWishlistScreenState extends State<ProductWishlistScreen> {
                           right: 10,
                           child: InkWell(
                             child: const Icon(Icons.favorite_outlined),
-                            onTap: () async => await bloc!.removeFromWishlist(product: product),
+                            onTap: () async {
+                              await showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: const Text('Are you sure?'),
+                                  content: const Text('Remove product from wishlist?'),
+                                  actions: [
+                                    ElevatedButton(
+                                      onPressed: () => Get.back(),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        await bloc!.removeFromWishlist(product: product);
+                                        Get.back();
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                // index == (bloc!.productsWishlist.length - 1) && bloc!.isLoading.value ? const CircularProgressIndicator() : const SizedBox(),
-                index == (bloc!.productsWishlist.length - 1) && bloc!.isLoading.value ? const CircularProgressIndicator() : const SizedBox(),
+                index == (bloc!.productsWishlist.length - 1) && bloc!.isLoading.value
+                    ? const SizedBox(
+                        height: 32,
+                        width: 32,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const SizedBox(),
               ],
             );
           },
         ),
       );
-    });
+    }
   }
 }
