@@ -22,8 +22,9 @@ class WishlistCubit extends Cubit<WishlistState> {
   Future<void> getWishlistProducts({required int page, int perPage = defaultPerPage}) async {
     try {
       isLoading.value = true;
+      isLastPage.value = false;
       emit(WishlistLoading());
-      logW(page);
+      logW("LOAD page $page");
       final pagination = await locator<ProductRepositoryImpl>().getWishlistPagination(currentPage: page, perPage: perPage);
 
       pageController.value = page;
@@ -45,10 +46,22 @@ class WishlistCubit extends Cubit<WishlistState> {
       bool isUpdated = await locator<ProductRepositoryImpl>().removeWishlist(product);
       if (isUpdated) {
         productsWishlist.remove(product);
-        emit(WishlistError(message: "Product has been removed from wishlist"));
+        emit(RemoveFromWishlist(message: "Product has been removed from wishlist"));
       } else {
         emit(WishlistError(message: "Failed to remove product!"));
       }
+    } catch (e) {
+      emit(WishlistError(message: e.toString()));
+      logE("REMOVE_WISHLIST_ERROR: ${e.toString()}");
+    }
+  }
+
+  Future<void> clearWishlist() async {
+    try {
+      emit(WishlistLoading());
+      await locator<ProductRepositoryImpl>().clearWishlist();
+      productsWishlist.clear();
+      emit(WishlistLoaded(products: []));
     } catch (e) {
       emit(WishlistError(message: e.toString()));
       logE("REMOVE_WISHLIST_ERROR: ${e.toString()}");

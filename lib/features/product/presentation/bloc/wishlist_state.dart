@@ -33,10 +33,10 @@ class ClearWishlist extends WishlistState {
 }
 
 class RemoveFromWishlist extends WishlistState {
-  final String? id;
-  RemoveFromWishlist({this.id});
+  final String? message;
+  RemoveFromWishlist({this.message});
   @override
-  List<Object?> get props => [id];
+  List<Object?> get props => [message];
 }
 
 class WishlistError extends WishlistState {
