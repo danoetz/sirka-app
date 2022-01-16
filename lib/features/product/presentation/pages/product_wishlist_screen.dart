@@ -143,7 +143,10 @@ class _ProductWishlistScreenState extends State<ProductWishlistScreen> {
             return Column(
               children: [
                 InkWell(
-                  onTap: () => Get.toNamed(AppPagesName.PRODUCT_DETAIL, arguments: <String, dynamic>{"product": product, "hero": "wishlist-${product.id}"}),
+                  onTap: () => Get.toNamed(
+                    AppPagesName.PRODUCT_DETAIL,
+                    arguments: <String, dynamic>{"product": product, "hero": "hero-${product.id}"},
+                  ),
                   child: Card(
                     margin: EdgeInsets.zero,
                     elevation: 0,
