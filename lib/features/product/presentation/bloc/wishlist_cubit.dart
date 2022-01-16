@@ -61,7 +61,7 @@ class WishlistCubit extends Cubit<WishlistState> {
       emit(WishlistLoading());
       await locator<ProductRepositoryImpl>().clearWishlist();
       productsWishlist.clear();
-      emit(WishlistLoaded(products: []));
+      emit(WishlistLoaded(products: const []));
     } catch (e) {
       emit(WishlistError(message: e.toString()));
       logE("REMOVE_WISHLIST_ERROR: ${e.toString()}");

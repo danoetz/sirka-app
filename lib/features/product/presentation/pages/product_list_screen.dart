@@ -5,13 +5,13 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sirka_app/core/constants/db.dart';
 import 'package:sirka_app/core/routers/app_names.dart';
 import 'package:sirka_app/features/product/data/models/product.dart';
 import 'package:sirka_app/features/product/presentation/bloc/product_cubit.dart';
 import 'package:sirka_app/shared/helpers/dialog_helper.dart';
 import 'package:sirka_app/shared/helpers/print_helper.dart';
-import 'package:sirka_app/shared/helpers/snackbar_helper.dart';
 import 'package:sirka_app/shared/styles/text_styles.dart';
 
 class ProductListScreen extends StatefulWidget {
@@ -79,18 +79,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
           bloc!.productsList.addAll(state.products!);
         } else if (state is WishlistAdded) {
           printDebug("ADDED");
-          SnackBarHelper.dismissSnackBar();
-          SnackBarHelper.showSnackBar(
-            title: "Wishlist",
-            description: "${state.product!.name} is added to wishlist",
-          );
         } else if (state is WishlistRemoved) {
           printDebug("REMOVED");
-          SnackBarHelper.dismissSnackBar();
-          SnackBarHelper.showSnackBar(
-            title: "Wishlist",
-            description: "${state.product!.name} is removed from wishlist",
-          );
         }
       },
       child: Obx(() {
@@ -140,10 +130,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   return Column(
                     children: [
                       InkWell(
-                        onTap: () => Get.toNamed(
-                          AppPagesName.PRODUCT_DETAIL,
-                          arguments: <String, dynamic>{"product": product, "hero": "hero-${product.id}"},
-                        ),
+                        onTap: () => bloc!.openDetail(product: product),
                         child: Card(
                           margin: EdgeInsets.zero,
                           elevation: 0,
@@ -169,6 +156,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                         imageUrl: product.image!,
                                         fit: BoxFit.cover,
                                         cacheKey: "hero-${product.id}",
+                                        placeholder: (context, url) {
+                                          return SizedBox(
+                                            height: Get.width / 3,
+                                            width: Get.width / 3,
+                                            child: Shimmer.fromColors(
+                                              baseColor: Colors.grey,
+                                              highlightColor: Colors.white54,
+                                              child: Container(
+                                                color: Colors.white54,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ),
                                   ),
@@ -178,14 +178,25 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text("${product.id!} - ${product.name!}", style: AppTextStyle.text18sbBlack),
-                                          Text(
-                                            product.description!,
-                                            softWrap: true,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
+                                          Text(product.name!, style: AppTextStyle.text18sbBlack),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(vertical: 6.0),
+                                            child: Text(
+                                              product.description!,
+                                              softWrap: true,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
                                           ),
                                           Text("\$ ${product.price!}", style: AppTextStyle.text14sbBlack),
+                                          const SizedBox(height: 10),
+                                          product.isWishlist!
+                                              ? const Text(
+                                                  "** This product in wish list",
+                                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400, color: Colors.green),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              : const SizedBox(),
                                         ],
                                       ),
                                     ),
@@ -196,7 +207,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 bottom: 10,
                                 right: 10,
                                 child: InkWell(
-                                  child: SizedBox(child: wishlistStatus ? const Icon(Icons.favorite) : const Icon(Icons.favorite_border)),
+                                  child: SizedBox(
+                                    child: wishlistStatus ? const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_border),
+                                  ),
                                   onTap: () async {
                                     await bloc!.updateProductWishlist(product: product);
                                   },

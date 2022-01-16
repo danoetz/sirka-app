@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
         title: 'SIRKA',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: const SplashScreen(),
+        debugShowCheckedModeBanner: false,
         getPages: AppPages.pages,
       ),
     );

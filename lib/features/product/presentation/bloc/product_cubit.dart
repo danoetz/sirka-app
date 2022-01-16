@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:sirka_app/core/modules/locator_module.dart';
+import 'package:sirka_app/core/routers/app_names.dart';
 import 'package:sirka_app/features/product/data/models/product.dart';
 import 'package:sirka_app/features/product/data/repositories/product_repository_impl.dart';
 
@@ -16,6 +17,7 @@ class ProductCubit extends Cubit<ProductState> {
   static const int defaultPerPage = 10;
   RxBool isLastPage = false.obs;
   RxBool isLoading = false.obs;
+  Rx<Product> productDetail = Product().obs;
 
   Future<void> getProductsPagination({required int page, int perPage = defaultPerPage}) async {
     try {
@@ -53,7 +55,13 @@ class ProductCubit extends Cubit<ProductState> {
         emit(WishlistRemoved(product: product));
       }
     } catch (e) {
-      emit(WishlistError(message: e.toString()));
+      emit(ProductError(message: e.toString()));
     }
+  }
+
+  openDetail({Product? product}) {
+    productDetail.value = product!;
+    emit(ProductDetailLoaded(product: product));
+    Get.toNamed(AppPagesName.PRODUCT_DETAIL);
   }
 }

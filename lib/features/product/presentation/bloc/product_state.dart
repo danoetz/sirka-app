@@ -27,6 +27,13 @@ class ProductLoaded extends ProductState {
   List<Object?> get props => [products];
 }
 
+class ProductDetailLoaded extends ProductState {
+  final Product? product;
+  ProductDetailLoaded({this.product});
+  @override
+  List<Object?> get props => [product];
+}
+
 class ProductError extends ProductState {
   final String message;
   ProductError({this.message = "Something wrong..."});
@@ -46,11 +53,4 @@ class WishlistRemoved extends ProductState {
   WishlistRemoved({this.product});
   @override
   List<Object?> get props => [product];
-}
-
-class WishlistError extends ProductState {
-  final String message;
-  WishlistError({this.message = "Something wrong..."});
-  @override
-  List<Object?> get props => [message];
 }
