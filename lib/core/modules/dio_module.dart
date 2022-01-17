@@ -8,7 +8,7 @@ late Dio dio;
 
 class DioModule {
   static void init() {
-    locator.registerSingleton(DioClient(buildConfig: GetIt.I()));
+    sl.registerSingleton(DioClient(buildConfig: GetIt.I()));
     dio = GetIt.I<DioClient>().dioClient;
   }
 }

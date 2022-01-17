@@ -23,7 +23,7 @@ class ProductCubit extends Cubit<ProductState> {
     try {
       emit(ProductLoading());
       isLoading.value = true;
-      final data = await locator<ProductRepositoryImpl>().fetchProductsPagination(page: page, limit: perPage);
+      final data = await sl<ProductRepositoryImpl>().fetchProductsPagination(page: page, limit: perPage);
 
       pageController.value = page;
       if (data!.length < defaultPerPage) {
@@ -48,10 +48,10 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> updateProductWishlist({required Product product}) async {
     try {
       if (product.isWishlist! == false || product.isWishlist == null) {
-        await locator<ProductRepositoryImpl>().addWishlist(product);
+        await sl<ProductRepositoryImpl>().addWishlist(product);
         emit(WishlistAdded(product: product));
       } else {
-        await locator<ProductRepositoryImpl>().removeWishlist(product);
+        await sl<ProductRepositoryImpl>().removeWishlist(product);
         emit(WishlistRemoved(product: product));
       }
     } catch (e) {

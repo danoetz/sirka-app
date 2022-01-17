@@ -10,7 +10,7 @@ import 'package:sirka_app/shared/helpers/print_helper.dart';
 class ProductRepositoryImpl implements ProductRepository {
   @override
   Future<List<Product>?> fetchProductsPagination({int page = 0, int limit = 5}) async {
-    bool isOnline = await locator.get<NetworkInfoImpl>().isConnected;
+    bool isOnline = await sl.get<NetworkInfoImpl>().isConnected;
     if (isOnline) {
       // fetch from remote
       var res = await ProductRemoteDataSourceImpl().getProductsPagination(page: page, limit: limit);
