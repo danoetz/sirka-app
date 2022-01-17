@@ -7,6 +7,10 @@ class AppTextStyle {
     return TextStyle(fontWeight: FontWeight.w600, fontSize: 18, color: AppColor.black);
   }
 
+  static TextStyle get text14RegBlack {
+    return TextStyle(fontWeight: FontWeight.normal, fontSize: 14, color: AppColor.black);
+  }
+
   static TextStyle get text14sbBlack {
     return TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColor.black);
   }

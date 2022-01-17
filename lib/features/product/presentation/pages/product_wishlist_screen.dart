@@ -236,7 +236,22 @@ class _ProductWishlistScreenState extends State<ProductWishlistScreen> {
                                       context: context,
                                       builder: (_) => AlertDialog(
                                         title: const Text('Are you sure?'),
-                                        content: const Text('Remove product from wishlist?'),
+                                        content: RichText(
+                                          text: TextSpan(
+                                            text: 'Remove',
+                                            style: AppTextStyle.text14RegBlack,
+                                            children: [
+                                              TextSpan(
+                                                text: ' ${product.name!} ',
+                                                style: AppTextStyle.text14sbBlack,
+                                              ),
+                                              TextSpan(
+                                                text: 'from wishlist?',
+                                                style: AppTextStyle.text14RegBlack,
+                                              )
+                                            ],
+                                          ),
+                                        ),
                                         actions: [
                                           ElevatedButton(
                                             onPressed: () => Get.back(),
